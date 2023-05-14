@@ -1,6 +1,7 @@
 __pycache__
-./experiment/*
-./imagenet/*
-./outputs/*
+./experiment/**
+./imagenet/**
+./outputs/**
 venv
 image_*
+**.DS_Store
