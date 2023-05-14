@@ -5,3 +5,4 @@ __pycache__
 venv
 image_*
 **.DS_Store
+.DS_Store
