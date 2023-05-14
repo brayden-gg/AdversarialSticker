@@ -1,0 +1,6 @@
+__pycache__
+./experiment/*
+./imagenet/*
+./outputs/*
+venv
+image_*
