@@ -126,7 +126,7 @@ def overlay_sticker(all_images, sticker, dims=None, x=None, y=None, i=None, scal
     bright = tf.math.reduce_max(intensities, axis=[1,2]) * .8
     dark = tf.math.reduce_min(intensities, axis=[1,2]) * 1.2
     rnge = tf.reshape(tf.repeat(bright - dark, 224 * 224 * 3, axis=0), (images.shape[0], 224, 224, 3))
-    sticker = sticker / 255 * rnge
+    sticker = sticker / 255 * rnge + dark
 
     applied = sticker * matte + images * (1 - matte)
 
