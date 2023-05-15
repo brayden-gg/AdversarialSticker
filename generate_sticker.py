@@ -1,7 +1,6 @@
 # code inspired by
 # https://pyimagesearch.com/2020/10/19/adversarial-images-and-attacks-with-keras-and-tensorflow/#:~:text=Adversarial%20images%20are%20perturbed%20in,identical%20to%20the%20human%20eye.
 
-# import necessary packages
 from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.applications.resnet50 import decode_predictions
@@ -22,13 +21,13 @@ batch_size = 30
 image_folder = "./imagenet"
 output_folder = "./outputs"
 img_size = 224
-class_idx = 294 # Brown Bear
-# class_idx = 430 # Basketball
+target_class = 294 # Brown Bear
+# target_class = 430 # Basketball
 
 """
 Optimizes the pixels in the patch to produce an adversarial sticker
 """
-def generate_sticker(model, lossfn, optimizer, baseImages, sticker, classIdx, steps, batch_size):
+def generate_sticker(model, lossfn, optimizer, baseImages, sticker, target_class, steps, batch_size):
     for step in range(0, steps):
         with tf.GradientTape() as tape:
             # track sticker for gradient descent
@@ -37,9 +36,9 @@ def generate_sticker(model, lossfn, optimizer, baseImages, sticker, classIdx, st
             _, overlay = overlay_sticker(baseImages, sticker, count=batch_size)
             adversary = preprocess_input(overlay)
             
-            # predict the class of image with sticker and compute the loss wrt desired class
+            # predict the class of image with sticker and compute the loss wrt. target class
             predictions = model(adversary, training=False)
-            loss = sum(lossfn(tf.convert_to_tensor([classIdx]), predictions[i]) for i in range(batch_size))
+            loss = sum(lossfn(tf.convert_to_tensor([target_class]), predictions[i]) for i in range(batch_size))
             
             print(f"step: {step}, loss: {loss.numpy() / batch_size} ...")
         # use loss to run the optimizer
@@ -164,7 +163,7 @@ def main():
 
     # generate the perturbation vector to create an adversarial example
     print("generating sticker...")
-    finalSticker = generate_sticker(model, sccLoss, optimizer, baseImages, sticker, class_idx, steps, batch_size)
+    finalSticker = generate_sticker(model, sccLoss, optimizer, baseImages, sticker, target_class, steps, batch_size)
     stickerImage = sticker.numpy().squeeze()
     stickerImage = np.clip(stickerImage, 0, 255).astype("uint8")
     stickerImage = cv2.cvtColor(stickerImage, cv2.COLOR_RGB2BGR)
